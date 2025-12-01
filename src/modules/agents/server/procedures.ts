@@ -10,8 +10,8 @@ export const agentsRouter = createTRPCRouter({
         .select()
         .from(agents)
 
-        // await new Promise ((resolve) => setTimeout(resolve,5000));
-        throw new TRPCError({ code : "BAD_REQUEST"});
+        await new Promise ((resolve) => setTimeout(resolve,1000));
+        // throw new TRPCError({ code : "BAD_REQUEST"});
 
         return data;
     })

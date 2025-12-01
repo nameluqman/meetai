@@ -11,8 +11,8 @@ export const AgentsView = () =>{
     
     return (
         <div>
-                {JSON.stringify(data , null ,2)}
-            </div>
+               {JSON.stringify(data , null ,2)}
+        </div>
         );
     };
     export const AgentsViewLoading = () =>{
