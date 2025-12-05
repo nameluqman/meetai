@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import {NuqsAdapter} from "nuqs/adapters/next";
+
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/client";
 import "./globals.css";
@@ -20,6 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <NuqsAdapter>
     <TRPCReactProvider>
         <html lang="en">
           <body
@@ -30,5 +33,6 @@ export default function RootLayout({
           </body>
         </html>
     </TRPCReactProvider>
+    </NuqsAdapter>
   );
 }
