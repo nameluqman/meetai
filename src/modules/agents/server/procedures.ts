@@ -1,5 +1,5 @@
 import z from "zod";
-import {count,desc, and, eq, getTableColumns, ilike, sql } from "drizzle-orm";
+import { count, desc, and, eq, getTableColumns, ilike, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { agents, user } from "@/db/schema";
 
@@ -12,20 +12,31 @@ import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@
 export const agentsRouter = createTRPCRouter({
 
     //todo change "getOne" to "protectedProcedure"
-    getOne: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
-        const [existingAgent] = await db
-            .select({
-                meetingCount: sql<number>`5`,
-                ...getTableColumns(agents),
-            })
-            .from(agents)
-            .where(eq(agents.id, input.id))
+    getOne: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .query(async ({ input , ctx }) => {
+            const [existingAgent] = await db
+                .select({
+                    meetingCount: sql<number>`5`,
+                    ...getTableColumns(agents),
+                })
+                .from(agents)
+                .where(
+                    and(
+                        eq(agents.id, input.id),
+                        eq(agents.userId,ctx.auth.user.id)
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        // throw new TRPCError({ code : "BAD_REQUEST"});
+                    )
+                )
+            if(!existingAgent){
+                throw new TRPCError({code : "NOT_FOUND", message : "Agent not found"});
+            }    
 
-        return existingAgent;
-    }),
+            // await new Promise((resolve) => setTimeout(resolve, 1000));
+            // // throw new TRPCError({ code : "BAD_REQUEST"});
+
+            return existingAgent;
+        }),
     //todo change "getmany" to "protectedProcedure"
     getmany: protectedProcedure
         .input(z.object({
@@ -39,7 +50,7 @@ export const agentsRouter = createTRPCRouter({
         })
         )
         .query(async ({ ctx, input }) => {
-            const {search ,page ,pageSize} = input;
+            const { search, page, pageSize } = input;
             const data = await db
                 .select({
                     meetingCount: sql<number>`7`,
@@ -49,31 +60,31 @@ export const agentsRouter = createTRPCRouter({
                 .where(
                     and(
                         eq(agents.userId, ctx.auth.user.id),
-                           search ? ilike(agents.name, `%${search}%`) : undefined,
+                        search ? ilike(agents.name, `%${search}%`) : undefined,
                     )
                 )
-                .orderBy(desc(agents.createdAt) , desc(agents.id))
+                .orderBy(desc(agents.createdAt), desc(agents.id))
                 .limit(pageSize)
-                .offset((page-1) * pageSize)
+                .offset((page - 1) * pageSize)
 
 
             const [total] = await db
-               .select({count : count() })
-               .from(agents)
+                .select({ count: count() })
+                .from(agents)
                 .where(
                     and(
                         eq(agents.userId, ctx.auth.user.id),
-                           search ? ilike(agents.name, `%${search}%`) : undefined,
+                        search ? ilike(agents.name, `%${search}%`) : undefined,
                     )
                 );
-            const totalPages =Math.ceil(total.count/pageSize);
-           
+            const totalPages = Math.ceil(total.count / pageSize);
+
             // await new Promise((resolve) => setTimeout(resolve, 1000));
             // // throw new TRPCError({ code : "BAD_REQUEST"});
 
             return {
-                items:data,
-                total:total.count,
+                items: data,
+                total: total.count,
                 totalPages,
             };
         }),
