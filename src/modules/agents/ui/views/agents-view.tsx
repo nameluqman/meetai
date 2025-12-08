@@ -16,7 +16,7 @@ export const AgentsView = () => {
   const [filters, setFilters] = useAgentsFilters();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(
-    trpc.agents.getmany.queryOptions({
+    trpc.agents.getMany.queryOptions({
       ...filters,
     })
   );
@@ -59,7 +59,7 @@ export const AgentsViewError = () => {
   );
 };
 
-// const {data , isLoading , isError} = useSuspenseQuery(trpc.agents.getmany.queryOptions());
+// const {data , isLoading , isError} = useSuspenseQuery(trpc.agents.getMany.queryOptions());
 // if(isLoading){
 //     return(
 //         <LoadingState

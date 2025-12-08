@@ -8,11 +8,11 @@ import { ErrorState } from "@/components/error-state";
 export const MeetingsView = () => {
     const trpc = useTRPC();
     const {data} = useSuspenseQuery(
-        trpc.meetings.getmany.queryOptions({})
+        trpc.meetings.getMany.queryOptions({})
     );
     return (
-        <div>
-            {JSON.stringify(data)} 
+        <div className="overflow-x-scroll">
+            {JSON.stringify(data)};
         </div>        
     );
 }
