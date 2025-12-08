@@ -84,8 +84,8 @@ export const agentsRouter = createTRPCRouter({
 
             return existingAgent;
         }),
-    //todo change "getmany" to "protectedProcedure"
-    getmany: protectedProcedure
+    //todo change "getMany" to "protectedProcedure"
+    getMany: protectedProcedure
         .input(z.object({
             page: z.number().default(DEFAULT_PAGE),
             pageSize: z

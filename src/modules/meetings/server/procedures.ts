@@ -1,4 +1,4 @@
-import z from "zod";
+import {z} from "zod";
 import { count, desc, and, eq, getTableColumns, ilike} from "drizzle-orm";
 import { db } from "@/db";
 import { meetings } from "@/db/schema";
@@ -7,8 +7,49 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { Input } from "@/components/ui/input";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@/constants";
+import { meetingsInsertSchema, meetingsUpdateSchema } from "../schemas";
 
 export const meetingsRouter = createTRPCRouter({
+
+     update : protectedProcedure
+            .input(meetingsUpdateSchema)
+            .mutation(async ({ctx , input }) => {
+                const [updatedMeeting] = await db
+                .update(meetings)
+                .set(input)
+                .where(
+                        and(
+                            eq(meetings.id, input.id),
+                            eq(meetings.userId,ctx.auth.user.id)
+    
+                        ),
+                    )
+                    .returning(); 
+                    
+                    if(!updatedMeeting){
+                    throw new TRPCError({
+                        code : "NOT_FOUND", 
+                        message : "Meeting not found"
+                    });
+                }  
+                return updatedMeeting; 
+            }),
+
+    create: protectedProcedure
+            .input(meetingsInsertSchema)
+            .mutation(async ({ input, ctx }) => {
+                const [createdMeeting] = await db
+                    .insert(meetings)
+                    .values({
+                        ...input,
+                        userId: ctx.auth.user.id,
+                    })
+                    .returning();
+
+                    //TODO Create stream call , Upsert stream user 
+    
+                return createdMeeting;
+            }),
   
 
     //todo change "getOne" to "protectedProcedure"
@@ -36,8 +77,8 @@ export const meetingsRouter = createTRPCRouter({
 
             return existingMeeting;
         }),
-    //todo change "getmany" to "protectedProcedure"
-    getmany: protectedProcedure
+    //todo change "getMany" to "protectedProcedure"
+    getMany: protectedProcedure
         .input(z.object({
             page: z.number().default(DEFAULT_PAGE),
             pageSize: z

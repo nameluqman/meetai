@@ -40,7 +40,7 @@ export const AgentForm =({
         trpc.agents.create.mutationOptions({
             onSuccess : async () =>{
                 await queryClient.invalidateQueries(
-                    trpc.agents.getmany.queryOptions({}),
+                    trpc.agents.getMany.queryOptions({}),
                 );
                 //TODO : invalidate free tier usage
                 // if(initialValues?.id){
@@ -60,7 +60,7 @@ export const AgentForm =({
         trpc.agents.update.mutationOptions({
             onSuccess : async () =>{
                 await queryClient.invalidateQueries(
-                    trpc.agents.getmany.queryOptions({}),
+                    trpc.agents.getMany.queryOptions({}),
                 );
                 if(initialValues?.id){
                     await queryClient.invalidateQueries(
