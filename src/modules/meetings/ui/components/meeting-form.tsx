@@ -103,7 +103,6 @@ export const MeetingForm =({
     const onSubmit = (values : z.infer<typeof meetingsInsertSchema>) =>{
         if (isEdit){
             updateMeeting.mutate({...values , id : initialValues.id})
-            console.log("TODO:updateMeeting")
         }else{
             createMeeting.mutate(values);
         }
@@ -113,11 +112,6 @@ export const MeetingForm =({
         <NewAgentDialog open={openNewAgentDialog} onOpenChange={setOpenNewAgentDialog}/>
         <Form {...form}>
             <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-                {/* <GeneratedAvatar 
-                seed ={form.watch("name")}
-                variant="botttsNeutral"
-                className="border size-16"
-                /> */}
                 <FormField
                 name="name"
                 control={form.control}
