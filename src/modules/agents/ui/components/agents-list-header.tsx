@@ -1,8 +1,12 @@
 "use client"
 
 import { useState } from "react";
+
 import { DEFAULT_PAGE } from "@/constants";
 import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
+
 import { PlusIcon, XCircleIcon } from "lucide-react";
 import { NewAgentDialog } from "./new-agent-dialog";
 import { useAgentsFilters } from "../../hooks/use-agents-filters";
@@ -31,6 +35,7 @@ export const AgentsListHeader =()=>{
                     New Agent
                 </Button>
             </div>
+            <ScrollArea>
             <div className="flex items-center gap-x-2 p-1">
             <AgentsSearchFilters />
             {isAnyFilterModified && (
@@ -40,6 +45,8 @@ export const AgentsListHeader =()=>{
                 </Button>
             )}
             </div>
+            <ScrollBar orientation="horizontal"/>
+            </ScrollArea>
         </div>
         </>
     );
