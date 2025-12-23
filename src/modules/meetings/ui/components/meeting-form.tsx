@@ -57,18 +57,18 @@ export const MeetingForm =({
                 await queryClient.invalidateQueries(
                     trpc.meetings.getMany.queryOptions({}),
                 );
-                //TODO : invalidate free tier usage
-                // if(initialValues?.id){
-                //     await queryClient.invalidateQueries(
-                //         trpc.agents.getOne.queryOptions({id:initialValues.id}),
-                //     )
-                // }
+                 await queryClient.invalidateQueries(
+                    trpc.premium.getFreeUsage.queryOptions(),
+                );
+                
                 onSuccess?.(data.id);
             },
             onError : (error) =>{
                 toast.error(error.message)
-                //todo check if error code is "FORBIDDEN" redirect to "/undate"
-            }
+                if(error.data?.code === "FORBIDDEN"){
+                    router.push("/upgrade")
+                }
+            },
         }),
     );
     const updateMeeting = useMutation(
@@ -86,7 +86,6 @@ export const MeetingForm =({
             },
             onError : (error) =>{
                 toast.error(error.message)
-                //todo check if error code is "FORBIDDEN" redirect to "/undate"
             }
         }),
     );
