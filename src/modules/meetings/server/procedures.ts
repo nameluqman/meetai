@@ -6,7 +6,7 @@ import { meetings , agents, user } from "@/db/schema";
 import { generateAvatarUri } from "@/lib/avatar";
 import { streamVideo } from "@/lib/stream-video";
 
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { Input } from "@/components/ui/input";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@/constants";
@@ -24,6 +24,7 @@ export const meetingsRouter = createTRPCRouter({
         });
         return token;
     }),
+
 
     getTranscript : protectedProcedure
         .input(z.object({id: z.string()}))
@@ -178,7 +179,7 @@ export const meetingsRouter = createTRPCRouter({
                 return updatedMeeting; 
             }),
 
-    create: protectedProcedure
+    create: premiumProcedure("meetings")
             .input(meetingsInsertSchema)
             .mutation(async ({ input, ctx }) => {
                 const [createdMeeting] = await db
