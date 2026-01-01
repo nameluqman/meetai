@@ -1,7 +1,6 @@
 import { auth } from '@/lib/auth';
 import { initTRPC, TRPCError } from '@trpc/server';
 import next from 'next';
-import { cache } from 'react';
 import { session } from '../../auth-schema';
 import { headers } from 'next/headers';
 import { polarClient } from '@/lib/polar';
@@ -9,12 +8,17 @@ import { db } from '@/db';
 import { agents, meetings } from '@/db/schema';
 import { count, eq } from 'drizzle-orm';
 import { MAX_FREE_AGENTS, MAX_FREE_MEETINGS } from '@/modules/premium/constants';
-export const createTRPCContext = cache(async () => {
+
+export const createTRPCContext = async (opts: { req: Request }) => {
   /**
    * @see: https://trpc.io/docs/server/context
    */
-  return { userId: 'user_123' };
-});
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  return { userId: session?.user.id ?? null };
+};
+
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
 // For instance, the use of a t variable
