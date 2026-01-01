@@ -3,7 +3,7 @@ import { count, desc, and, eq, getTableColumns, ilike } from "drizzle-orm";
 import { db } from "@/db";
 import { agents, meetings, user } from "@/db/schema";
 
-import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
+import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/types";
 import { TRPCError } from "@trpc/server";
 import { agentsInsertSchema, agentsUpdateSchema } from "../schemas";
 import { Input } from "@/components/ui/input";

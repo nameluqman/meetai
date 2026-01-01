@@ -5,7 +5,7 @@ import { db } from "@/db";
 import { meetings , agents, user, meetingParticipants } from "@/db/schema";
 import { generateAvatarUri } from "@/lib/avatar";
 import { streamVideo } from "@/lib/stream-video";
-import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
+import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/types";
 import { TRPCError } from "@trpc/server";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@/constants";
 import { MeetingStatus, StreamTranscriptItem } from '../types';
