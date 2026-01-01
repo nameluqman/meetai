@@ -1,7 +1,5 @@
-import { auth } from '@/lib/auth';
 import { initTRPC, TRPCError } from '@trpc/server';
-import next from 'next';
-import { session } from '../../auth-schema';
+import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { polarClient } from '@/lib/polar';
 import { db } from '@/db';
@@ -9,14 +7,15 @@ import { agents, meetings } from '@/db/schema';
 import { count, eq } from 'drizzle-orm';
 import { MAX_FREE_AGENTS, MAX_FREE_MEETINGS } from '@/modules/premium/constants';
 
-export const createTRPCContext = async (opts: { req: Request }) => {
-  /**
-   * @see: https://trpc.io/docs/server/context
-   */
+export const createTRPCContext = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  return { userId: session?.user.id ?? null };
+  
+  return {
+    session,
+    user: session?.user ?? null,
+  };
 };
 
 // Avoid exporting the entire t-object
@@ -35,13 +34,10 @@ export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
 
 export const protectedProcedure = baseProcedure.use(async ({ ctx ,next})=>{
-  const session = await auth.api.getSession({
-      headers : await headers(),
-  });
-  if(!session){
+  if(!ctx.session){
     throw new TRPCError({code:"UNAUTHORIZED", message:"Unauthorized"});
   }
-  return next ({ctx : {...ctx, auth:session}})
+  return next ({ctx : {...ctx, auth:ctx.session}})
 });
 
 export const premiumProcedure = (entity: "meetings" | "agents") =>
