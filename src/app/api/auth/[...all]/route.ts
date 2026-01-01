@@ -1,4 +1,12 @@
-import { auth } from "@/lib/auth"; // path to your auth file
-import { toNextJsHandler } from "better-auth/next-js";
+export const runtime = 'nodejs'; // Ensure this is not 'edge'
+export const dynamic = 'force-dynamic';
 
-export const { POST, GET } = toNextJsHandler(auth);
+import { NextResponse } from 'next/server';
+
+export const POST = async (req: Request) => {
+  return NextResponse.json({ message: 'Auth temporarily disabled for debugging' });
+};
+
+export const GET = async (req: Request) => {
+  return NextResponse.json({ message: 'Auth temporarily disabled for debugging' });
+};
