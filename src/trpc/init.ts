@@ -18,46 +18,40 @@ export const createTRPCContext = async () => {
   };
 };
 
-// Avoid exporting the entire t-object
-// since it's not very descriptive.
-// For instance, the use of a t variable
-// is common in i18n libraries.
-const t = initTRPC.create({
-  /**
-   * @see https://trpc.io/docs/server/data-transformers
-   */
-  // transformer: superjson,
-});
+const t = initTRPC.create();
+
 // Base router and procedure helpers
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
 
 export const protectedProcedure = baseProcedure.use(async ({ ctx ,next})=>{
-  if(!ctx.session){
+  const context = ctx as any;
+  if(!context.session){
     throw new TRPCError({code:"UNAUTHORIZED", message:"Unauthorized"});
   }
-  return next ({ctx : {...ctx, auth:ctx.session}})
+  return next ({ctx : {...context, auth:context.session}})
 });
 
 export const premiumProcedure = (entity: "meetings" | "agents") =>
   protectedProcedure.use(async ({ ctx, next }) => {
+    const context = ctx as any;
     const customer = await polarClient.customers.getStateExternal({
-      externalId: ctx.auth.user.id,
+      externalId: context.user.id,
     });
     const [userMeetings] = await db
             .select({
                 count : count(meetings.id),
             })
             .from(meetings)
-            .where(eq(meetings.userId , ctx.auth.user.id));
+            .where(eq(meetings.userId , context.user.id));
     
             const [userAgents] = await db
             .select({
                 count : count(agents.id),
             })
             .from(agents)
-            .where(eq(agents.userId , ctx.auth.user.id));
+            .where(eq(agents.userId , context.user.id));
 
             const isPremium = customer.activeSubscriptions.length > 0;
             const isFreeAgentLimitReached = userAgents.count >= MAX_FREE_AGENTS;
@@ -82,6 +76,6 @@ export const premiumProcedure = (entity: "meetings" | "agents") =>
               });
             }
 
-            return next({ ctx : {...ctx,customer} });
+            return next({ ctx : {...context,customer} });
     
   })  
