@@ -226,7 +226,7 @@ export const meetingsRouter = createTRPCRouter({
                 const [existingAgent] = await db
                     .select()
                     .from(agents)
-                    .where(eq(agents.id , createdMeeting.agentId));
+                    .where(eq(agents.id , createdMeeting.agentId!));
 
                 if(!existingAgent){
                     throw new TRPCError({
