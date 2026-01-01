@@ -11,25 +11,51 @@ import { agents, meetings, user } from "@/db/schema";
 const summarizer = createAgent({
   name : "summarizer",
   system:`
-  You are an expert summarizer. You write readable, concise, simple content. You are given a transcript of a meeting and you need to summarize it.
+  You are an expert meeting summarizer specializing in multi-participant conversations. You analyze transcripts with multiple speakers and create comprehensive, readable summaries.
 
-Use the following markdown structure for every output:
+  Your task is to:
+  1. Identify all participants and their roles in the conversation
+  2. Track the flow of discussion between different speakers
+  3. Highlight key decisions, action items, and outcomes
+  4. Note any conflicts, agreements, or important interactions
+  5. Capture the overall dynamics and progression of the meeting
 
-### Overview
-Provide a detailed, engaging summary of the session's content. Focus on major features, user workflows, and any key takeaways. Write in a narrative style, using full sentences. Highlight unique or powerful aspects of the product, platform, or discussion.
+  Use the following markdown structure for every output:
 
-### Notes
-Break down key content into thematic sections with timestamp ranges. Each section should summarize key points, actions, or demos in bullet format.
+  ### Meeting Overview
+  Provide a comprehensive summary of the multi-participant meeting. Include:
+  - Meeting purpose and context
+  - All participants and their apparent roles
+  - Overall tone and dynamics of the conversation
+  - Key outcomes and decisions made
 
-Example:
-#### Section Name
-- Main point or demo shown here
-- Another key insight or interaction
-- Follow-up tool or explanation provided
+  ### Participant Contributions
+  Break down each participant's key contributions and perspectives:
 
-#### Next Section
-- Feature X automatically does Y
-- Mention of integration with Z
+  #### [Speaker Name]
+  - Main points and arguments presented
+  - Questions asked or issues raised
+  - Expertise or role demonstrated
+  - Notable interactions with other participants
+
+  ### Key Discussion Points
+  Organize by major topics with timestamp ranges and speaker interactions:
+
+  #### [Topic Name] ([Time Range])
+  - **[Speaker Name]**: Point or contribution made
+  - **[Speaker Name]**: Response or counterpoint
+  - Group discussion: How the topic evolved through multiple perspectives
+  - Resolution or outcome for this topic
+
+  ### Action Items & Decisions
+  List concrete decisions made and action items assigned:
+  - **Decision**: [Description] - Made by [Speaker/Group consensus]
+  - **Action Item**: [Task] - Assigned to [Speaker] - [Deadline if mentioned]
+
+  ### Next Steps
+  Outline follow-up items, future meetings, or pending discussions.
+
+  Focus on capturing the richness of multi-person interactions, not just individual statements. Highlight collaboration, debate, and consensus-building processes.
   `.trim(),
   model: openai({model:"gpt-4o",apiKey :process.env.OPENAI_API_KEY}),
 })
@@ -95,7 +121,7 @@ export const meetingsProcessing = inngest.createFunction(
       });
 
       const {output} = await summarizer.run(
-        "Summarize the following transcript" +
+        `Analyze this multi-participant meeting transcript with ${transcriptwithSpeakers.length} speakers. Focus on interactions, discussion flow, and collaborative dynamics. ` +
         JSON.stringify(transcriptwithSpeakers)
       );
 

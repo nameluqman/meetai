@@ -70,6 +70,31 @@ export const meetingsStatus = pgEnum ("meeting_status" , [
        "cancelled",
 ]);
 
+export const classrooms = pgTable("classrooms", {
+    id: text("id").primaryKey().$defaultFn(() => nanoid()),
+    name: text("name").notNull(),
+    description: text("description"),
+    subject: text("subject"),
+    teacherId: text("teacher_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const classroomEnrollments = pgTable("classroom_enrollments", {
+    id: text("id").primaryKey().$defaultFn(() => nanoid()),
+    classroomId: text("classroom_id").notNull().references(() => classrooms.id, { onDelete: "cascade" }),
+    userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+    role: text("role").notNull().default("student"), // "teacher" or "student"
+    joinedAt: timestamp("joined_at").notNull().defaultNow(),
+});
+
+export const classroomMeetings = pgTable("classroom_meetings", {
+    id: text("id").primaryKey().$defaultFn(() => nanoid()),
+    classroomId: text("classroom_id").notNull().references(() => classrooms.id, { onDelete: "cascade" }),
+    meetingId: text("meeting_id").notNull().references(() => meetings.id, { onDelete: "cascade" }),
+    scheduledAt: timestamp("scheduled_at").notNull().defaultNow(),
+});
+
 export const meetings = pgTable("meetings" , {
        id : text("id")
        .primaryKey()
@@ -79,7 +104,6 @@ export const meetings = pgTable("meetings" , {
        .notNull()
        .references(()=>user.id ,{onDelete : "cascade"}) ,
        agentId : text("agent_id")
-       .notNull()
        .references(()=>agents.id ,{onDelete : "cascade"}) ,
        status : meetingsStatus("status").notNull().default("upcoming"),
        
@@ -91,4 +115,23 @@ export const meetings = pgTable("meetings" , {
        createdAt : timestamp("created_at").notNull().defaultNow(), 
        updatedAt : timestamp("updated_at").notNull().defaultNow(),
 })                            
+
+export const meetingParticipants = pgTable("meeting_participants", {
+       id: text("id")
+         .primaryKey()
+         .$defaultFn(() => nanoid()),
+       meetingId: text("meeting_id")
+         .notNull()
+         .references(() => meetings.id, { onDelete: "cascade" }),
+       userId: text("user_id")
+         .references(() => user.id, { onDelete: "cascade" }),
+       agentId: text("agent_id")
+         .references(() => agents.id, { onDelete: "cascade" }),
+       joinedAt: timestamp("joined_at").notNull().defaultNow(),
+       leftAt: timestamp("left_at"),
+       role: text("role").notNull().default("participant"), // host, participant, agent
+})                            
+
+// Export all tables
+export * as schema from './schema';                            
 

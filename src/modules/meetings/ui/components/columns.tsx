@@ -45,14 +45,21 @@ export const columns: ColumnDef<MeetingGetMany[number]>[] = [
                 <div className="flex items-center gap-x-1">
                     <CornerDownRightIcon className="size-3 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground max-w-[200px] truncate capitalize">
-                        {row.original.agent.name}
+                        Host: {row.original.host?.name || "Unknown"}
                     </span>
                 </div>
-                <GeneratedAvatar 
-                    variant="botttsNeutral"
-                    seed={row.original.agent.name}
-                    className="size-4"
-                />
+                {row.original.agent && (
+                    <>
+                        <GeneratedAvatar 
+                            variant="botttsNeutral"
+                            seed={row.original.agent.name}
+                            className="size-4"
+                        />
+                        <span className="text-sm text-muted-foreground max-w-[200px] truncate capitalize">
+                            {row.original.agent.name}
+                        </span>
+                    </>
+                )}
                 <span className="text-sm text-muted-foreground">
                     {row.original.startedAt ? format(row.original.startedAt, "MM d") : ""}
                 </span>    

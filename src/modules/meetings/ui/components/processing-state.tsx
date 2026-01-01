@@ -5,9 +5,9 @@ export const ProcessingState = () => {
         <div className="bg-white rounded-lg px-4 py-5 flex flex-col gap-y-8 items-center justify-center">
             <EmptyState 
                 image="/processing.svg"
-                title="Meeting completed"
-                description="This meeting was completed, a summary will appear soon"
+                title="Processing Meeting"
+                description="AI is generating summary and transcript. This may take a few minutes..."
             />
          </div>
     );
-}   
+}

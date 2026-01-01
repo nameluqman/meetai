@@ -38,6 +38,10 @@ export const CallConnect = ({
     trpc.meetings.generateToken.mutationOptions()
   );
 
+  const { mutateAsync: joinMeeting } = useMutation(
+    trpc.meetings.joinMeeting.mutationOptions()
+  );
+
   const [client, setClient] = useState<StreamVideoClient>();
   useEffect(() => {
     const _client = new StreamVideoClient({
@@ -88,7 +92,7 @@ export const CallConnect = ({
   return (
     <StreamVideo client={client}>
         <StreamCall call={call}>
-            <CallUI meetingName={meetingName}/>
+            <CallUI meetingName={meetingName} meetingId={meetingId} />
         </StreamCall>
     </StreamVideo>
   );
