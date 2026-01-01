@@ -82,27 +82,28 @@ export async function POST(req: NextRequest) {
             })
             .where(eq(meetings.id, existingMeeting.id));
 
-
-        const [existingAgent] = await db
-            .select()
-            .from(agents)
-            .where(eq(agents.id, existingMeeting.agentId));
-
-        if (!existingAgent) {
-            return NextResponse.json({ error: "Agent not found" }, { status: 404 });
-        }
-
         const call = streamVideo.video.call("default", meetingId);
 
-        const realtimeClient = await streamVideo.video.connectOpenAi({
-            call,
-            openAiApiKey: process.env.OPENAI_API_KEY!,
-            agentUserId: existingAgent.id,
-        });
+        if (existingMeeting.agentId) {
+            const [existingAgent] = await db
+                .select()
+                .from(agents)
+                .where(eq(agents.id, existingMeeting.agentId!));
 
-        realtimeClient.updateSession({
-            instructions: existingAgent.instructions,
-        });
+            if (!existingAgent) {
+                return NextResponse.json({ error: "Agent not found" }, { status: 404 });
+            }
+
+            const realtimeClient = await streamVideo.video.connectOpenAi({
+                call,
+                openAiApiKey: process.env.OPENAI_API_KEY!,
+                agentUserId: existingAgent.id,
+            });
+
+            realtimeClient.updateSession({
+                instructions: existingAgent.instructions,
+            });
+        }
 
     } else if (eventType === "call.session_participant_left") {
         const event = payload as CallSessionParticipantLeftEvent;
@@ -188,16 +189,20 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Meeting not found" },{ status: 404 });
         }
 
-        const [existingAgent] = await db
-        .select()
-        .from(agents)
-        .where(eq(agents.id, existingMeeting.agentId))
+        if (existingMeeting.agentId) {
+            const [existingAgent] = await db
+            .select()
+            .from(agents)
+            .where(eq(agents.id, existingMeeting.agentId!))
 
-        if (!existingAgent) {
-            return NextResponse.json({ error: "Agent not found" },{ status: 404 });
-        }
+            if (!existingAgent) {
+                return NextResponse.json({ error: "Agent not found" },{ status: 404 });
+            }
 
-        if (userId !== existingAgent.id){
+            if (userId === existingAgent.id){
+                return NextResponse.json({ status: "ok" });
+            }
+
             const instructions = `
             You are an AI assistant helping the user revisit a recently completed meeting.
             Below is a summary of the meeting, generated from the transcript:
@@ -266,6 +271,8 @@ export async function POST(req: NextRequest) {
                         image: avatarUrl,
                     },
                 });
+        } else {
+            return NextResponse.json({ error: "No agent assigned to meeting" },{ status: 404 });
         }
     }
     return NextResponse.json({ status: "ok" });
