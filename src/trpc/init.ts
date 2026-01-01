@@ -30,7 +30,7 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx ,next})=>{
   if(!context.session){
     throw new TRPCError({code:"UNAUTHORIZED", message:"Unauthorized"});
   }
-  return next ({ctx : {...context, auth:context.session}})
+  return next ({ctx : {...context, auth: { user: context.user }}})
 });
 
 export const premiumProcedure = (entity: "meetings" | "agents") =>
