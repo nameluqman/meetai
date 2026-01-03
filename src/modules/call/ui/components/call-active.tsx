@@ -115,16 +115,8 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
             {/* Controls */}
             <div className="bg-[#101213] rounded-full px-4 flex items-center justify-between z-10">
                 <CallControls 
-                    onLeave={isHost ? onLeave : undefined}
+                    onLeave={isHost ? onLeave : handleParticipantLeave}
                 />
-                {!isHost && (
-                    <button 
-                        onClick={handleParticipantLeave}
-                        className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-full transition-colors text-sm"
-                    >
-                        Leave Call
-                    </button>
-                )}
             </div>
         </div>
     )
