@@ -59,7 +59,8 @@ export const CallUI = ({ meetingName, meetingId }: Props) => {
     const handleParticipantLeave = async () => {
         if (!call) return;
         await call.leave(); // Participant leaves, meeting continues
-        setShow("ended");
+        // Redirect participant back to dashboard instead of showing ended screen
+        window.location.href = "/";
     }
 
     return (
