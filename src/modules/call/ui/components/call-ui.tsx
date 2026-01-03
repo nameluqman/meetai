@@ -10,6 +10,8 @@ import { CallEnded } from "./call-ended";
 
 import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { authClient } from "@/lib/auth-client";
 
 interface Props {
     meetingName: string;
@@ -18,9 +20,13 @@ interface Props {
 
 export const CallUI = ({ meetingName, meetingId }: Props) => {
     
+    const { data: user } = authClient.useSession();
     const trpc = useTRPC();
     const call = useCall();
     const [show, setShow] = useState<"lobby" | "call" | "ended">("lobby");
+    const { data: meeting } = useSuspenseQuery(
+        trpc.meetings.getOne.queryOptions({ id: meetingId })
+    );
 
     const { mutateAsync: joinMeeting } = useMutation(
         trpc.meetings.joinMeeting.mutationOptions()
@@ -52,6 +58,14 @@ export const CallUI = ({ meetingName, meetingId }: Props) => {
 
     const handleLeave = async () => {
         if (!call) return;
+        
+        // Double-check: Only host should be able to end meeting
+        const isHost = user?.user?.id === meeting.host?.id;
+        if (!isHost) {
+            console.error("Unauthorized: Only host can end meeting");
+            return;
+        }
+        
         await call.endCall(); // Only host can call this, ends meeting for everyone
         setShow("ended");
     }
