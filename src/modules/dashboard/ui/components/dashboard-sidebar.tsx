@@ -11,7 +11,7 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupTitle,
+    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -68,9 +68,9 @@ export const DashboardSidebar = () => {
 
             <SidebarContent className="p-3">
                 <SidebarGroup>
-                    <SidebarGroupTitle className="text-sidebar-foreground/70 font-semibold">
+                    <SidebarGroupLabel className="text-sidebar-foreground/70 font-semibold">
                         Main
-                    </SidebarGroupTitle>
+                    </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {firstSection.map((item) => (
@@ -99,9 +99,9 @@ export const DashboardSidebar = () => {
                 </SidebarGroup>
 
                 <SidebarGroup className="mt-6">
-                    <SidebarGroupTitle className="text-sidebar-foreground/70 font-semibold">
+                    <SidebarGroupLabel className="text-sidebar-foreground/70 font-semibold">
                         Resources
-                    </SidebarGroupTitle>
+                    </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {secondSection.map((item) => (
