@@ -113,8 +113,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Missing meetingId" }, { status: 400 });
         }
 
-        const call = streamVideo.video.call("default", meetingId);
-        await call.end();
+        console.log(`Participant left meeting ${meetingId}, but keeping call active for rejoining`);
     } else if (eventType === "call.session_ended") {
         const event = payload as CallEndedEvent;
         const meetingId = event.call.custom?.meetingId;
@@ -123,13 +122,24 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Missing meetingId" }, { status: 400 });
         }
 
-        await db
-            .update(meetings)
-            .set({
-                status: "processing",
-                endedAt: new Date(),
-            })
-            .where(and(eq(meetings.id, meetingId), eq(meetings.status, "active")));
+        console.log(`Call session ended for meeting ${meetingId}, checking if it was a host-initiated end`);
+        
+        // Check if there are still active participants before ending the meeting
+        const call = streamVideo.video.call("default", meetingId);
+        const callState = await call.get();
+        
+        // Only mark as processing if the call was actually ended (no active participants)
+        if (callState.call.ended_at) {
+            await db
+                .update(meetings)
+                .set({
+                    status: "processing",
+                    endedAt: new Date(),
+                })
+                .where(and(eq(meetings.id, meetingId), eq(meetings.status, "active")));
+        } else {
+            console.log(`Meeting ${meetingId} still has active participants, keeping status as active`);
+        }
     } else if (eventType === "call.transcription_ready") {
         const event = payload as CallTranscriptionReadyEvent;
         const meetingId = event.call_cid.split(":")[1];

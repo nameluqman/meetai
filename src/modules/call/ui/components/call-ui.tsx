@@ -38,6 +38,12 @@ export const CallUI = ({ meetingName, meetingId }: Props) => {
     useEffect(() => {
         if (!call || !meeting) return;
 
+        console.log("Meeting state check:", {
+            meetingStatus: meeting.status,
+            callState: call.state.callingState,
+            meetingId: meetingId
+        });
+
         // If meeting is active and user is already in the call, show call view
         if (meeting.status === MeetingStatus.Active && call.state.callingState === CallingState.JOINED) {
             console.log("User is already in active meeting, showing call view");
@@ -48,12 +54,22 @@ export const CallUI = ({ meetingName, meetingId }: Props) => {
             console.log("Meeting is active but user left, showing lobby to rejoin");
             setShow("lobby");
         }
-        // If meeting is not active, show lobby
-        else {
-            console.log("Meeting not active, showing lobby");
+        // If meeting is upcoming, show lobby (user can join upcoming meetings)
+        else if (meeting.status === MeetingStatus.Upcoming) {
+            console.log("Meeting is upcoming, showing lobby");
             setShow("lobby");
         }
-    }, [call, meeting]);
+        // If meeting is processing, show lobby (might be starting soon)
+        else if (meeting.status === MeetingStatus.Processing) {
+            console.log("Meeting is processing, showing lobby");
+            setShow("lobby");
+        }
+        // If meeting is not active, show lobby
+        else {
+            console.log("Meeting not active or unknown status, showing lobby");
+            setShow("lobby");
+        }
+    }, [call, meeting, meetingId]);
 
     const handleJoin = async () => {
         if (!call) return;
