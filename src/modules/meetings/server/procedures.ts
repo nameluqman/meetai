@@ -1,6 +1,6 @@
 import {z} from "zod";
 import JSONL from "jsonl-parse-stringify";
-import { count, desc, and, eq, getTableColumns, ilike,sql, inArray} from "drizzle-orm";
+import { count, countDistinct, desc, and, eq, getTableColumns, ilike,sql, inArray} from "drizzle-orm";
 import { db } from "@/db";
 import { meetings , agents, user, meetingParticipants } from "@/db/schema";
 import { generateAvatarUri } from "@/lib/avatar";
@@ -348,7 +348,7 @@ export const meetingsRouter = createTRPCRouter({
                 .offset((page - 1) * pageSize)
 
             const [total] = await db
-                .select({ count: count() })
+                .select({ count: countDistinct(meetings.id) })
                 .from(meetings)
                 .innerJoin(agents , eq(meetings.agentId , agents.id))
                 .innerJoin(user, eq(meetings.userId, user.id))
