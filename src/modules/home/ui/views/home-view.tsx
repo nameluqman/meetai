@@ -25,18 +25,49 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MeetingStatus } from "@/modules/meetings/types";
 
 export const HomeView = () => {
     const trpc = useTRPC();
     const { data: user } = authClient.useSession();
     const [timeRange, setTimeRange] = useState("week");
 
-    // Get recent meetings
+    // Get recent meetings for display
     const { data: recentMeetings } = useSuspenseQuery(
         trpc.meetings.getMany.queryOptions({ 
             page: 1, 
             pageSize: 5,
             search: ""
+        })
+    );
+
+    // Get total counts for each status
+    const { data: totalMeetingsData } = useSuspenseQuery(
+        trpc.meetings.getMany.queryOptions({ 
+            page: 1, 
+            pageSize: 1,
+            search: ""
+        })
+    );
+    const { data: activeMeetingsData } = useSuspenseQuery(
+        trpc.meetings.getMany.queryOptions({ 
+            page: 1, 
+            pageSize: 1,
+            status: MeetingStatus.Active
+        })
+    );
+    const { data: completedMeetingsData } = useSuspenseQuery(
+        trpc.meetings.getMany.queryOptions({ 
+            page: 1, 
+            pageSize: 1,
+            status: MeetingStatus.Completed
+        })
+    );
+    const { data: processingMeetingsData } = useSuspenseQuery(
+        trpc.meetings.getMany.queryOptions({ 
+            page: 1, 
+            pageSize: 1,
+            status: MeetingStatus.Processing
         })
     );
 
@@ -48,10 +79,11 @@ export const HomeView = () => {
         })
     );
 
-    // Calculate stats
-    const totalMeetings = recentMeetings?.total || 0;
-    const activeMeetings = recentMeetings?.items?.filter(m => m.status === "active").length || 0;
-    const completedMeetings = recentMeetings?.items?.filter(m => m.status === "completed").length || 0;
+    // Calculate stats from total counts
+    const totalMeetings = totalMeetingsData?.total || 0;
+    const activeMeetings = activeMeetingsData?.total || 0;
+    const completedMeetings = completedMeetingsData?.total || 0;
+    const processingMeetings = processingMeetingsData?.total || 0;
     const totalAgents = agents?.total || 0;
 
     const completionRate = totalMeetings > 0 ? (completedMeetings / totalMeetings) * 100 : 0;
@@ -85,48 +117,70 @@ export const HomeView = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <Card className="relative overflow-hidden">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Meetings</CardTitle>
-                        <VideoIcon className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{totalMeetings}</div>
-                        <p className="text-xs text-muted-foreground">
-                            +2 from last week
-                        </p>
-                    </CardContent>
-                    <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
-                </Card>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
+                <Link href="/meetings">
+                    <Card className="relative overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Total Meetings</CardTitle>
+                            <VideoIcon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{totalMeetings}</div>
+                            <p className="text-xs text-muted-foreground">
+                                All meetings
+                            </p>
+                        </CardContent>
+                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+                    </Card>
+                </Link>
 
-                <Card className="relative overflow-hidden">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Active Now</CardTitle>
-                        <ActivityIcon className="h-4 w-4 text-green-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-green-600">{activeMeetings}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Live meetings
-                        </p>
-                    </CardContent>
-                    <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
-                </Card>
+                <Link href="/meetings?status=active">
+                    <Card className="relative overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Active Now</CardTitle>
+                            <ActivityIcon className="h-4 w-4 text-green-500" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-green-600">{activeMeetings}</div>
+                            <p className="text-xs text-muted-foreground">
+                                Live meetings
+                            </p>
+                        </CardContent>
+                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
+                    </Card>
+                </Link>
 
-                <Card className="relative overflow-hidden">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Completed</CardTitle>
-                        <TrendingUpIcon className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{completedMeetings}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {completionRate.toFixed(2)}% completion rate
-                        </p>
-                    </CardContent>
-                    <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
-                </Card>
+                <Link href="/meetings?status=processing">
+                    <Card className="relative overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Processing</CardTitle>
+                            <ClockIcon className="h-4 w-4 text-orange-500" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-orange-600">{processingMeetings}</div>
+                            <p className="text-xs text-muted-foreground">
+                                Being processed
+                            </p>
+                        </CardContent>
+                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+                    </Card>
+                </Link>
+
+                <Link href="/meetings?status=completed">
+                    <Card className="relative overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                            <TrendingUpIcon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{completedMeetings}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {completionRate.toFixed(1)}% completion rate
+                            </p>
+                        </CardContent>
+                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+                    </Card>
+                </Link>
 
                 <Card className="relative overflow-hidden">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -199,13 +253,13 @@ export const HomeView = () => {
                                             </div>
                                             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-3">
                                                 <Badge className={
-                                                    meeting.status === "active" ? "bg-green-500/20 text-green-800 border-green-800/5" :
-                                                    meeting.status === "completed" ? "bg-gray-500/20 text-gray-800 border-gray-800/5" :
+                                                    meeting.status === MeetingStatus.Active ? "bg-green-500/20 text-green-800 border-green-800/5" :
+                                                    meeting.status === MeetingStatus.Completed ? "bg-gray-500/20 text-gray-800 border-gray-800/5" :
                                                     "bg-blue-500/20 text-blue-800 border-blue-800/5"
                                                 }>
                                                     {meeting.status}
                                                 </Badge>
-                                                {meeting.status === "active" ? (
+                                                {meeting.status === MeetingStatus.Active ? (
                                                     <Button size="sm" asChild>
                                                         <Link href={`/call/${meeting.id}`}>
                                                             <PlayIcon className="w-4 h-4 mr-2" />
