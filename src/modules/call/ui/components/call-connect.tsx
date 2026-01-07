@@ -72,12 +72,8 @@ export const CallConnect = ({
     _call.microphone.disable();
     setCall(_call);
 
-    return () => {
-      if (_call.state.callingState !== CallingState.LEFT) {
-        _call.leave(); // Only leave the call, don't end it for everyone
-        setCall(undefined);
-      }
-    };
+    // No cleanup needed - client cleanup handles disconnection
+    // This prevents meeting from ending on refresh
   }, [client, meetingId]);
 
   if (!client || !call) {
