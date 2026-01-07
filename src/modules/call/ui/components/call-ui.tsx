@@ -59,14 +59,7 @@ export const CallUI = ({ meetingName, meetingId }: Props) => {
     const handleLeave = async () => {
         if (!call) return;
         
-        // Double-check: Only host should be able to end meeting
-        const isHost = user?.user?.id === meeting.host?.id;
-        if (!isHost) {
-            console.error("Unauthorized: Only host can end meeting");
-            return;
-        }
-        
-        await call.endCall(); // Only host can call this, ends meeting for everyone
+        await call.endCall(); // Ends meeting for everyone (called only by host)
         setShow("ended");
     }
 

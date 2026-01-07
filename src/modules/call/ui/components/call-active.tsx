@@ -45,6 +45,16 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
         }
     };
 
+    const handleLeave = async () => {
+        if (isHost) {
+            // Host ends the meeting for everyone
+            onLeave();
+        } else {
+            // Participant leaves the meeting (meeting continues)
+            await handleParticipantLeave();
+        }
+    };
+
     return(
         <div className="flex flex-col justify-between h-full text-white relative">
             {/* Header */}
@@ -115,7 +125,7 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
             {/* Controls */}
             <div className="bg-[#101213] rounded-full px-4 flex items-center justify-between z-10">
                 <CallControls 
-                    onLeave={isHost ? onLeave : handleParticipantLeave}
+                    onLeave={handleLeave}
                 />
             </div>
         </div>

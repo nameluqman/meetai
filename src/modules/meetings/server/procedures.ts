@@ -140,22 +140,43 @@ export const meetingsRouter = createTRPCRouter({
     remove : protectedProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ctx , input }) => {
-            const [removedMeeting] = await db
-                .delete(meetings)
-                .where(
-                    and(
-                        eq(meetings.id, input.id),
-                        eq(meetings.userId , ctx.auth.user.id)
-                    )
-                )
-                .returning(); 
+            // First check if user is the meeting creator
+            const [meeting] = await db
+                .select()
+                .from(meetings)
+                .where(eq(meetings.id, input.id));
                     
-            if(!removedMeeting){
+            if(!meeting){
                 throw new TRPCError({
                     code : "NOT_FOUND", 
                     message : "Meeting not found"
                 });
-            }  
+            }
+
+            // Check if user is the host of this meeting
+            const [hostParticipant] = await db
+                .select()
+                .from(meetingParticipants)
+                .where(
+                    and(
+                        eq(meetingParticipants.meetingId, input.id),
+                        eq(meetingParticipants.userId, ctx.auth.user.id),
+                        eq(meetingParticipants.role, "host")
+                    )
+                );
+
+            if (!hostParticipant) {
+                throw new TRPCError({
+                    code: "FORBIDDEN",
+                    message: "Only the host can cancel this meeting"
+                });
+            }
+
+            const [removedMeeting] = await db
+                .delete(meetings)
+                .where(eq(meetings.id, input.id))
+                .returning(); 
+                    
             return removedMeeting; 
         }),
         
