@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { 
-    VideoIcon, 
-    UsersIcon, 
-    ClockIcon, 
+import {
+    VideoIcon,
+    UsersIcon,
+    ClockIcon,
     TrendingUpIcon,
     CalendarIcon,
     MicIcon,
@@ -34,8 +34,8 @@ export const HomeView = () => {
 
     // Get recent meetings for display
     const { data: recentMeetings } = useSuspenseQuery(
-        trpc.meetings.getMany.queryOptions({ 
-            page: 1, 
+        trpc.meetings.getMany.queryOptions({
+            page: 1,
             pageSize: 5,
             search: ""
         })
@@ -43,29 +43,29 @@ export const HomeView = () => {
 
     // Get total counts for each status
     const { data: totalMeetingsData } = useSuspenseQuery(
-        trpc.meetings.getMany.queryOptions({ 
-            page: 1, 
+        trpc.meetings.getMany.queryOptions({
+            page: 1,
             pageSize: 1,
             search: ""
         })
     );
     const { data: activeMeetingsData } = useSuspenseQuery(
-        trpc.meetings.getMany.queryOptions({ 
-            page: 1, 
+        trpc.meetings.getMany.queryOptions({
+            page: 1,
             pageSize: 1,
             status: MeetingStatus.Active
         })
     );
     const { data: completedMeetingsData } = useSuspenseQuery(
-        trpc.meetings.getMany.queryOptions({ 
-            page: 1, 
+        trpc.meetings.getMany.queryOptions({
+            page: 1,
             pageSize: 1,
             status: MeetingStatus.Completed
         })
     );
     const { data: processingMeetingsData } = useSuspenseQuery(
-        trpc.meetings.getMany.queryOptions({ 
-            page: 1, 
+        trpc.meetings.getMany.queryOptions({
+            page: 1,
             pageSize: 1,
             status: MeetingStatus.Processing
         })
@@ -73,9 +73,9 @@ export const HomeView = () => {
 
     // Get agents
     const { data: agents } = useSuspenseQuery(
-        trpc.agents.getMany.queryOptions({ 
-            page: 1, 
-            pageSize: 3 
+        trpc.agents.getMany.queryOptions({
+            page: 1,
+            pageSize: 3
         })
     );
 
@@ -89,27 +89,27 @@ export const HomeView = () => {
     const completionRate = totalMeetings > 0 ? (completedMeetings / totalMeetings) * 100 : 0;
 
     return (
-        <div className="container mx-auto py-8 space-y-8">
+        <div className="container mx-auto py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
             {/* Welcome Header */}
-            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 p-4 sm:p-6 lg:p-8 rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/10 dark:via-indigo-900/10 dark:to-purple-900/10 border border-blue-200/50 dark:border-blue-800/30">
-                <div className="space-y-2">
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold gradient-text">
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 sm:gap-4 lg:gap-6 p-3 sm:p-4 lg:p-6 xl:p-8 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/10 dark:via-indigo-900/10 dark:to-purple-900/10 border border-blue-200/50 dark:border-blue-800/30">
+                <div className="space-y-1 sm:space-y-2">
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-5xl font-bold gradient-text">
                         Welcome back, {user?.user?.name}.
                     </h1>
-                    <p className="text-muted-foreground text-base sm:text-lg lg:text-xl xl:text-2xl font-medium">
+                    <p className="text-muted-foreground text-sm sm:text-base lg:text-lg xl:text-2xl font-medium">
                         Here's what's happening with your meetings today
                     </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2 xl:gap-4">
                     <Button asChild className="w-full sm:w-auto xl:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <Link href="/meetings/new">
-                            <PlusIcon className="w-5 h-5 mr-2" />
+                            <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                             New Meeting
                         </Link>
                     </Button>
                     <Button variant="outline" asChild className="w-full sm:w-auto xl:w-auto border-2 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-blue-50 dark:hover:from-indigo-900/20 dark:hover:to-blue-900/20 transition-all duration-300">
                         <Link href="/agents">
-                            <BotIcon className="w-5 h-5 mr-2" />
+                            <BotIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                             Manage Agents
                         </Link>
                     </Button>
@@ -117,18 +117,18 @@ export const HomeView = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2 sm:gap-3 lg:gap-4 xl:gap-6">
                 <Link href="/meetings">
-                    <Card className="relative overflow-hidden card-hover group cursor-pointer border-0 shadow-lg hover:shadow-xl">
+                    <Card className="relative overflow-hidden card-hover group cursor-pointer border-0 shadow-md sm:shadow-lg hover:shadow-xl">
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
-                            <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-300">Total Meetings</CardTitle>
-                            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                                <VideoIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 relative">
+                            <CardTitle className="text-xs sm:text-sm font-semibold text-blue-700 dark:text-blue-300">Total Meetings</CardTitle>
+                            <div className="p-1.5 sm:p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                                <VideoIcon className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400" />
                             </div>
                         </CardHeader>
                         <CardContent className="relative">
-                            <div className="text-3xl font-bold text-blue-700 dark:text-blue-300 animate-pulse-slow">{totalMeetings}</div>
+                            <div className="text-2xl sm:text-3xl font-bold text-blue-700 dark:text-blue-300 animate-pulse-slow">{totalMeetings}</div>
                             <p className="text-xs text-blue-600/70 dark:text-blue-400/70 font-medium">
                                 All meetings
                             </p>
@@ -138,16 +138,16 @@ export const HomeView = () => {
                 </Link>
 
                 <Link href="/meetings?status=active">
-                    <Card className="relative overflow-hidden card-hover group cursor-pointer border-0 shadow-lg hover:shadow-xl">
+                    <Card className="relative overflow-hidden card-hover group cursor-pointer border-0 shadow-md sm:shadow-lg hover:shadow-xl">
                         <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
-                            <CardTitle className="text-sm font-semibold text-green-700 dark:text-green-300">Active Now</CardTitle>
-                            <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30 animate-pulse">
-                                <ActivityIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 relative">
+                            <CardTitle className="text-xs sm:text-sm font-semibold text-green-700 dark:text-green-300">Active Now</CardTitle>
+                            <div className="p-1.5 sm:p-2 rounded-lg bg-green-100 dark:bg-green-900/30 animate-pulse">
+                                <ActivityIcon className="h-3 w-3 sm:h-4 sm:w-4 text-green-600 dark:text-green-400" />
                             </div>
                         </CardHeader>
                         <CardContent className="relative">
-                            <div className="text-3xl font-bold text-green-700 dark:text-green-300">{activeMeetings}</div>
+                            <div className="text-2xl sm:text-3xl font-bold text-green-700 dark:text-green-300">{activeMeetings}</div>
                             <p className="text-xs text-green-600/70 dark:text-green-400/70 font-medium">
                                 Live meetings
                             </p>
@@ -157,16 +157,16 @@ export const HomeView = () => {
                 </Link>
 
                 <Link href="/meetings?status=processing">
-                    <Card className="relative overflow-hidden card-hover group cursor-pointer border-0 shadow-lg hover:shadow-xl">
+                    <Card className="relative overflow-hidden card-hover group cursor-pointer border-0 shadow-md sm:shadow-lg hover:shadow-xl">
                         <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
-                            <CardTitle className="text-sm font-semibold text-orange-700 dark:text-orange-300">Processing</CardTitle>
-                            <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                                <ClockIcon className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 relative">
+                            <CardTitle className="text-xs sm:text-sm font-semibold text-orange-700 dark:text-orange-300">Processing</CardTitle>
+                            <div className="p-1.5 sm:p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
+                                <ClockIcon className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600 dark:text-orange-400" />
                             </div>
                         </CardHeader>
                         <CardContent className="relative">
-                            <div className="text-3xl font-bold text-orange-700 dark:text-orange-300">{processingMeetings}</div>
+                            <div className="text-2xl sm:text-3xl font-bold text-orange-700 dark:text-orange-300">{processingMeetings}</div>
                             <p className="text-xs text-orange-600/70 dark:text-orange-400/70 font-medium">
                                 Being processed
                             </p>
@@ -176,16 +176,16 @@ export const HomeView = () => {
                 </Link>
 
                 <Link href="/meetings?status=completed">
-                    <Card className="relative overflow-hidden card-hover group cursor-pointer border-0 shadow-lg hover:shadow-xl">
+                    <Card className="relative overflow-hidden card-hover group cursor-pointer border-0 shadow-md sm:shadow-lg hover:shadow-xl">
                         <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
-                            <CardTitle className="text-sm font-semibold text-purple-700 dark:text-purple-300">Completed</CardTitle>
-                            <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                                <TrendingUpIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 relative">
+                            <CardTitle className="text-xs sm:text-sm font-semibold text-purple-700 dark:text-purple-300">Completed</CardTitle>
+                            <div className="p-1.5 sm:p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                                <TrendingUpIcon className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600 dark:text-purple-400" />
                             </div>
                         </CardHeader>
                         <CardContent className="relative">
-                            <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">{completedMeetings}</div>
+                            <div className="text-2xl sm:text-3xl font-bold text-purple-700 dark:text-purple-300">{completedMeetings}</div>
                             <p className="text-xs text-purple-600/70 dark:text-purple-400/70 font-medium">
                                 {completionRate.toFixed(1)}% completion
                             </p>
@@ -196,14 +196,14 @@ export const HomeView = () => {
 
                 <Card className="relative overflow-hidden border-0 shadow-lg">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20"></div>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
-                        <CardTitle className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">AI Agents</CardTitle>
-                        <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 animate-float">
-                            <BotIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 relative">
+                        <CardTitle className="text-xs sm:text-sm font-semibold text-indigo-700 dark:text-indigo-300">AI Agents</CardTitle>
+                        <div className="p-1.5 sm:p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 animate-float">
+                            <BotIcon className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 dark:text-indigo-400" />
                         </div>
                     </CardHeader>
                     <CardContent className="relative">
-                        <div className="text-3xl font-bold text-indigo-700 dark:text-indigo-300">{totalAgents}</div>
+                        <div className="text-2xl sm:text-3xl font-bold text-indigo-700 dark:text-indigo-300">{totalAgents}</div>
                         <p className="text-xs text-indigo-600/70 dark:text-indigo-400/70 font-medium">
                             Ready to assist
                         </p>
@@ -269,8 +269,8 @@ export const HomeView = () => {
                                             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-3">
                                                 <Badge className={
                                                     meeting.status === MeetingStatus.Active ? "bg-green-500/20 text-green-800 border-green-800/5" :
-                                                    meeting.status === MeetingStatus.Completed ? "bg-gray-500/20 text-gray-800 border-gray-800/5" :
-                                                    "bg-blue-500/20 text-blue-800 border-blue-800/5"
+                                                        meeting.status === MeetingStatus.Completed ? "bg-gray-500/20 text-gray-800 border-gray-800/5" :
+                                                            "bg-blue-500/20 text-blue-800 border-blue-800/5"
                                                 }>
                                                     {meeting.status}
                                                 </Badge>
@@ -399,4 +399,4 @@ export const HomeView = () => {
             </div>
         </div>
     );
-};
+};     
