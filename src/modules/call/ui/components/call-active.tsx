@@ -56,38 +56,38 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
     };
 
     return(
-        <div className="flex flex-col justify-between h-full text-white relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="flex flex-col justify-between h-full text-white relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen">
             {/* Header */}
-            <div className="glass-morphism rounded-full p-4 flex items-center gap-4 z-10 m-2 sm:m-4">
-                <Link href="/" className="flex items-center justify-center p-2 bg-white/10 hover:bg-white/20 rounded-full w-fit transition-all duration-300 transform hover:scale-110">
-                    <Image src="/logo.svg" width={24} height={24} alt="Logo"/>
+            <div className="glass-morphism rounded-full p-3 sm:p-4 flex items-center gap-2 sm:gap-4 z-10 m-1 sm:m-2 lg:m-4">
+                <Link href="/" className="flex items-center justify-center p-1.5 sm:p-2 bg-white/10 hover:bg-white/20 rounded-full w-fit transition-all duration-300 transform hover:scale-110">
+                    <Image src="/logo.svg" width={20} height={20} alt="Logo" className="sm:w-6 sm:h-6"/>
                 </Link>
-                <h4 className="text-base sm:text-lg truncate flex-1 font-medium">
+                <h4 className="text-sm sm:text-base lg:text-lg truncate flex-1 font-medium">
                     {meetingName}
                 </h4>
                 
                 {/* Mobile Sidebar Toggle */}
                 <button
                     onClick={() => setShowSidebar(!showSidebar)}
-                    className="md:hidden p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110"
+                    className="md:hidden p-1.5 sm:p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110"
                 >
-                    {showSidebar ? <XIcon className="w-4 h-4" /> : <UsersIcon className="w-4 h-4" />}
+                    {showSidebar ? <XIcon className="w-3 h-3 sm:w-4 sm:h-4" /> : <UsersIcon className="w-3 h-3 sm:w-4 sm:h-4" />}
                 </button>
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col lg:flex-row gap-2 sm:gap-4 relative p-2 sm:p-4">
+            <div className="flex-1 flex flex-col lg:flex-row gap-1 sm:gap-2 lg:gap-4 relative p-1 sm:p-2 lg:p-4">
                 {/* Video Grid */}
                 <div className="flex-1 min-h-0 order-1 lg:order-1">
                     <PaginatedGridLayout />
                 </div>
 
                 {/* Desktop Sidebar - Hidden on mobile, visible on tablet and up */}
-                <div className="hidden md:block w-64 lg:w-80 space-y-4 order-2 lg:order-2">
-                    <div className="glass-morphism rounded-2xl p-4">
+                <div className="hidden md:block w-48 lg:w-64 xl:w-80 space-y-2 sm:space-y-3 lg:space-y-4 order-2 lg:order-2">
+                    <div className="glass-morphism rounded-xl sm:rounded-2xl p-2 sm:p-3 lg:p-4">
                         <ShareMeetingLink meetingId={meetingId} meetingName={meetingName} />
                     </div>
-                    <div className="glass-morphism rounded-2xl p-4">
+                    <div className="glass-morphism rounded-xl sm:rounded-2xl p-2 sm:p-3 lg:p-4">
                         <MeetingParticipants meetingId={meetingId} />
                     </div>
                 </div>
@@ -102,25 +102,25 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
                         />
                         
                         {/* Sliding Sidebar */}
-                        <div className="md:hidden fixed right-0 top-0 h-full w-72 sm:w-80 bg-gray-900/95 backdrop-blur-lg z-30 overflow-y-auto border-l border-white/10">
-                            <div className="p-4 space-y-4">
+                        <div className="md:hidden fixed right-0 top-0 h-full w-64 sm:w-72 lg:w-80 bg-gray-900/95 backdrop-blur-lg z-30 overflow-y-auto border-l border-white/10">
+                            <div className="p-3 sm:p-4 space-y-2 sm:space-y-3 lg:space-y-4">
                                 {/* Mobile Sidebar Header */}
-                                <div className="flex items-center justify-between p-4 border-b border-white/10">
-                                    <h3 className="text-lg font-semibold">Meeting Details</h3>
+                                <div className="flex items-center justify-between p-3 sm:p-4 border-b border-white/10">
+                                    <h3 className="text-base sm:text-lg font-semibold">Meeting Details</h3>
                                     <button
                                         onClick={() => setShowSidebar(false)}
-                                        className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110"
+                                        className="p-1.5 sm:p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110"
                                     >
-                                        <XIcon className="w-4 h-4" />
+                                        <XIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                                     </button>
                                 </div>
                                 
                                 {/* Sidebar Content */}
-                                <div className="space-y-4 p-4">
-                                    <div className="glass-morphism rounded-2xl p-4">
+                                <div className="space-y-2 sm:space-y-3 lg:space-y-4 p-2 sm:p-3 lg:p-4">
+                                    <div className="glass-morphism rounded-xl sm:rounded-2xl p-2 sm:p-3 lg:p-4">
                                         <ShareMeetingLink meetingId={meetingId} meetingName={meetingName} />
                                     </div>
-                                    <div className="glass-morphism rounded-2xl p-4">
+                                    <div className="glass-morphism rounded-xl sm:rounded-2xl p-2 sm:p-3 lg:p-4">
                                         <MeetingParticipants meetingId={meetingId} />
                                     </div>
                                 </div>
@@ -131,7 +131,7 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
             </div>
 
             {/* Controls */}
-            <div className="glass-morphism rounded-full px-4 sm:px-6 flex items-center justify-between z-10 m-2 sm:m-4">
+            <div className="glass-morphism rounded-full px-2 sm:px-4 lg:px-6 flex items-center justify-between z-10 m-1 sm:m-2 lg:m-4">
                 <CallControls 
                     onLeave={handleLeave}
                 />
