@@ -56,36 +56,40 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
     };
 
     return(
-        <div className="flex flex-col justify-between h-full text-white relative">
+        <div className="flex flex-col justify-between h-full text-white relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
             {/* Header */}
-            <div className="bg-[#101213] rounded-full p-4 flex items-center gap-4 z-10">
-                <Link href="/" className="flex items-center justify-center p-1 bg-white/10 rounded-full w-fit">
-                    <Image src="/logo.svg" width={22} height={22} alt="Logo"/>
+            <div className="glass-morphism rounded-full p-4 flex items-center gap-4 z-10 m-2 sm:m-4">
+                <Link href="/" className="flex items-center justify-center p-2 bg-white/10 hover:bg-white/20 rounded-full w-fit transition-all duration-300 transform hover:scale-110">
+                    <Image src="/logo.svg" width={24} height={24} alt="Logo"/>
                 </Link>
-                <h4 className="text-base truncate flex-1">
+                <h4 className="text-base sm:text-lg truncate flex-1 font-medium">
                     {meetingName}
                 </h4>
                 
                 {/* Mobile Sidebar Toggle */}
                 <button
                     onClick={() => setShowSidebar(!showSidebar)}
-                    className="lg:hidden p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                    className="lg:hidden p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110"
                 >
                     {showSidebar ? <XIcon className="w-4 h-4" /> : <UsersIcon className="w-4 h-4" />}
                 </button>
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex gap-4 relative">
+            <div className="flex-1 flex gap-2 sm:gap-4 relative p-2 sm:p-4">
                 {/* Video Grid */}
-                <div className="flex-1">
+                <div className="flex-1 min-h-0">
                     <PaginatedGridLayout />
                 </div>
 
                 {/* Desktop Sidebar */}
-                <div className="hidden lg:block w-80 space-y-4">
-                    <ShareMeetingLink meetingId={meetingId} meetingName={meetingName} />
-                    <MeetingParticipants meetingId={meetingId} />
+                <div className="hidden xl:block w-80 space-y-4">
+                    <div className="glass-morphism rounded-2xl p-4">
+                        <ShareMeetingLink meetingId={meetingId} meetingName={meetingName} />
+                    </div>
+                    <div className="glass-morphism rounded-2xl p-4">
+                        <MeetingParticipants meetingId={meetingId} />
+                    </div>
                 </div>
 
                 {/* Mobile Sidebar Overlay */}
@@ -93,28 +97,32 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
                     <>
                         {/* Backdrop */}
                         <div 
-                            className="lg:hidden fixed inset-0 bg-black/50 z-20"
+                            className="lg:hidden fixed inset-0 bg-black/60 z-20 backdrop-blur-sm"
                             onClick={() => setShowSidebar(false)}
                         />
                         
                         {/* Sliding Sidebar */}
-                        <div className="lg:hidden fixed right-0 top-0 h-full w-80 bg-[#101213] z-30 overflow-y-auto">
-                            <div className="p-4">
+                        <div className="lg:hidden fixed right-0 top-0 h-full w-80 bg-gray-900/95 backdrop-blur-lg z-30 overflow-y-auto border-l border-white/10">
+                            <div className="p-4 space-y-4">
                                 {/* Mobile Sidebar Header */}
-                                <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center justify-between p-4 border-b border-white/10">
                                     <h3 className="text-lg font-semibold">Meeting Details</h3>
                                     <button
                                         onClick={() => setShowSidebar(false)}
-                                        className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                                        className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110"
                                     >
                                         <XIcon className="w-4 h-4" />
                                     </button>
                                 </div>
                                 
                                 {/* Sidebar Content */}
-                                <div className="space-y-4">
-                                    <ShareMeetingLink meetingId={meetingId} meetingName={meetingName} />
-                                    <MeetingParticipants meetingId={meetingId} />
+                                <div className="space-y-4 p-4">
+                                    <div className="glass-morphism rounded-2xl p-4">
+                                        <ShareMeetingLink meetingId={meetingId} meetingName={meetingName} />
+                                    </div>
+                                    <div className="glass-morphism rounded-2xl p-4">
+                                        <MeetingParticipants meetingId={meetingId} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -123,7 +131,7 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
             </div>
 
             {/* Controls */}
-            <div className="bg-[#101213] rounded-full px-4 flex items-center justify-between z-10">
+            <div className="glass-morphism rounded-full px-4 sm:px-6 flex items-center justify-between z-10 m-2 sm:m-4">
                 <CallControls 
                     onLeave={handleLeave}
                 />

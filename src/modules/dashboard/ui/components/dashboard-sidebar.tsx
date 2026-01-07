@@ -11,14 +11,15 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
+    SidebarGroupTitle,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    } from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar";
 
-    import { DashboardTrial } from "./dashboard-trial";
-    import { DashboardUserButton } from "./dashboard-user-button";
+import { DashboardTrial } from "./dashboard-trial";
+import { DashboardUserButton } from "./dashboard-user-button";
 
 const firstSection = [
     {
@@ -42,76 +43,97 @@ const secondSection = [
 
 export const DashboardSidebar = () => {
     const pathname = usePathname();
-  return (
-    <Sidebar>
-            <SidebarHeader className="text-sidebar-accent-foreground">
-                <Link href="/" className="flex items-center gap-2 px-2 pt-2">
-                    <Image src="/logo.svg" height={36} width={36} alt="Meet.AI"/>
-                        <p className="text-2xl font-semibold">Meet.AI</p>
+    return (
+        <Sidebar className="border-r border-sidebar-border/50">
+            <SidebarHeader className="text-sidebar-accent-foreground bg-gradient-to-r from-sidebar to-sidebar-accent/20">
+                <Link
+                    href="/"
+                    className="flex items-center gap-3 px-3 pt-3 pb-2 hover:bg-white/5 rounded-lg transition-all duration-300 group"
+                >
+                    <div className="relative">
+                        <Image
+                            src="/logo.svg"
+                            height={40}
+                            width={40}
+                            alt="Meet.AI"
+                            className="transform transition-transform duration-300 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                    <p className="text-2xl font-bold bg-gradient-to-r from-sidebar-primary to-sidebar-accent-foreground bg-clip-text text-transparent">
+                        Meet.AI
+                    </p>
                 </Link>
             </SidebarHeader>
-            <div className="px-4 py-2">
-                <Separator className="opacity-10 text-[#5D6B68]"/>
-            </div>
-            <SidebarContent>
+
+            <SidebarContent className="p-3">
                 <SidebarGroup>
+                    <SidebarGroupTitle className="text-sidebar-foreground/70 font-semibold">
+                        Main
+                    </SidebarGroupTitle>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {firstSection.map((item) => (
-                                <SidebarMenuItem key={item.href} >
+                                <SidebarMenuItem key={item.href}>
                                     <SidebarMenuButton
-                                    asChild
-                                     className={cn(
-                                        "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
-                                        pathname === item.href && "bg-linear-to-r/oklch border-[#5D6B68]/10" 
-                                    )}
-                                    isActive={pathname === item.href}
-                                        >
-                                        <Link href={item.href} >
-                                        <item.icon className="size-5" />
-                                            <span className="text-sm font-medium tracking-tight">
-                                                {item.label}
-                                            </span>
+                                        asChild
+                                        size="lg"
+                                        className={cn(
+                                            "hover:bg-sidebar-accent/20 hover:text-sidebar-accent-foreground transition-all duration-300 group",
+                                            pathname === item.href &&
+                                                "bg-sidebar-accent/30 text-sidebar-accent-foreground font-semibold"
+                                        )}
+                                    >
+                                        <Link href={item.href}>
+                                            <item.icon className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+                                            <span>{item.label}</span>
+                                            {pathname === item.href && (
+                                                <div className="ml-auto w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                                            )}
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>
                     </SidebarGroupContent>
-                </SidebarGroup>  
-                <div className="px-4 py-2">
-                    <Separator className="opacity-10 text-[#5D6B68]"/>
-                </div>      
-                <SidebarGroup>
+                </SidebarGroup>
+
+                <SidebarGroup className="mt-6">
+                    <SidebarGroupTitle className="text-sidebar-foreground/70 font-semibold">
+                        Resources
+                    </SidebarGroupTitle>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {secondSection.map((item) => (
-                                <SidebarMenuItem key={item.href} >
+                                <SidebarMenuItem key={item.href}>
                                     <SidebarMenuButton
-                                    asChild
-                                     className={cn(
-                                        "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
-                                        pathname === item.href && "bg-linear-to-r/oklch border-[#5D6B68]/10" 
-                                    )}
-                                    isActive={pathname === item.href}
-                                        >
-                                        <Link href={item.href} >
-                                        <item.icon className="size-5" />
-                                            <span className="text-sm font-medium tracking-tight">
-                                                {item.label}
-                                            </span>
+                                        asChild
+                                        size="lg"
+                                        className={cn(
+                                            "hover:bg-sidebar-accent/20 hover:text-sidebar-accent-foreground transition-all duration-300 group",
+                                            pathname === item.href &&
+                                                "bg-sidebar-accent/30 text-sidebar-accent-foreground font-semibold"
+                                        )}
+                                    >
+                                        <Link href={item.href}>
+                                            <item.icon className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+                                            <span>{item.label}</span>
+                                            {pathname === item.href && (
+                                                <div className="ml-auto w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                                            )}
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>
                     </SidebarGroupContent>
-                </SidebarGroup>        
+                </SidebarGroup>
             </SidebarContent>
-            <SidebarFooter className="text-white">
-            <DashboardTrial />
+
+            <SidebarFooter className="p-3 border-t border-sidebar-border/50">
+                <DashboardTrial />
                 <DashboardUserButton />
             </SidebarFooter>
-    </Sidebar>    
-    )
+        </Sidebar>
+    );
 };
