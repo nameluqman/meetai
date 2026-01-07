@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
     StreamTheme,
     useCall,
+    CallingState,
 } from "@stream-io/video-react-sdk";
 
 import { CallLobby } from "./call-lobby";
@@ -12,6 +13,7 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth-client";
+import { MeetingStatus } from "@/modules/meetings/types";
 
 interface Props {
     meetingName: string;
@@ -31,6 +33,27 @@ export const CallUI = ({ meetingName, meetingId }: Props) => {
     const { mutateAsync: joinMeeting } = useMutation(
         trpc.meetings.joinMeeting.mutationOptions()
     );
+
+    // Check if user is already in the meeting when component loads
+    useEffect(() => {
+        if (!call || !meeting) return;
+
+        // If meeting is active and user is already in the call, show call view
+        if (meeting.status === MeetingStatus.Active && call.state.callingState === CallingState.JOINED) {
+            console.log("User is already in active meeting, showing call view");
+            setShow("call");
+        }
+        // If meeting is active but user is not in call, they might need to rejoin
+        else if (meeting.status === MeetingStatus.Active && call.state.callingState === CallingState.LEFT) {
+            console.log("Meeting is active but user left, showing lobby to rejoin");
+            setShow("lobby");
+        }
+        // If meeting is not active, show lobby
+        else {
+            console.log("Meeting not active, showing lobby");
+            setShow("lobby");
+        }
+    }, [call, meeting]);
 
     const handleJoin = async () => {
         if (!call) return;
