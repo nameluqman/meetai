@@ -69,21 +69,21 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
                 {/* Mobile Sidebar Toggle */}
                 <button
                     onClick={() => setShowSidebar(!showSidebar)}
-                    className="lg:hidden p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110"
+                    className="md:hidden p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110"
                 >
                     {showSidebar ? <XIcon className="w-4 h-4" /> : <UsersIcon className="w-4 h-4" />}
                 </button>
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex gap-2 sm:gap-4 relative p-2 sm:p-4">
+            <div className="flex-1 flex flex-col lg:flex-row gap-2 sm:gap-4 relative p-2 sm:p-4">
                 {/* Video Grid */}
-                <div className="flex-1 min-h-0">
+                <div className="flex-1 min-h-0 order-1 lg:order-1">
                     <PaginatedGridLayout />
                 </div>
 
-                {/* Desktop Sidebar */}
-                <div className="hidden xl:block w-80 space-y-4">
+                {/* Desktop Sidebar - Hidden on mobile, visible on tablet and up */}
+                <div className="hidden md:block w-64 lg:w-80 space-y-4 order-2 lg:order-2">
                     <div className="glass-morphism rounded-2xl p-4">
                         <ShareMeetingLink meetingId={meetingId} meetingName={meetingName} />
                     </div>
@@ -97,12 +97,12 @@ export const CallActive = ({onLeave, onParticipantLeave, meetingName, meetingId}
                     <>
                         {/* Backdrop */}
                         <div 
-                            className="lg:hidden fixed inset-0 bg-black/60 z-20 backdrop-blur-sm"
+                            className="md:hidden fixed inset-0 bg-black/60 z-20 backdrop-blur-sm"
                             onClick={() => setShowSidebar(false)}
                         />
                         
                         {/* Sliding Sidebar */}
-                        <div className="lg:hidden fixed right-0 top-0 h-full w-80 bg-gray-900/95 backdrop-blur-lg z-30 overflow-y-auto border-l border-white/10">
+                        <div className="md:hidden fixed right-0 top-0 h-full w-72 sm:w-80 bg-gray-900/95 backdrop-blur-lg z-30 overflow-y-auto border-l border-white/10">
                             <div className="p-4 space-y-4">
                                 {/* Mobile Sidebar Header */}
                                 <div className="flex items-center justify-between p-4 border-b border-white/10">

@@ -91,23 +91,23 @@ export const HomeView = () => {
     return (
         <div className="container mx-auto py-8 space-y-8">
             {/* Welcome Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/10 dark:via-indigo-900/10 dark:to-purple-900/10 border border-blue-200/50 dark:border-blue-800/30">
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 p-4 sm:p-6 lg:p-8 rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/10 dark:via-indigo-900/10 dark:to-purple-900/10 border border-blue-200/50 dark:border-blue-800/30">
                 <div className="space-y-2">
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold gradient-text">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold gradient-text">
                         Welcome back, {user?.user?.name}.
                     </h1>
-                    <p className="text-muted-foreground text-lg sm:text-xl lg:text-2xl font-medium">
+                    <p className="text-muted-foreground text-base sm:text-lg lg:text-xl xl:text-2xl font-medium">
                         Here's what's happening with your meetings today
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 lg:gap-4">
-                    <Button asChild className="w-full sm:w-auto lg:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="flex flex-col sm:flex-row gap-2 xl:gap-4">
+                    <Button asChild className="w-full sm:w-auto xl:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <Link href="/meetings/new">
                             <PlusIcon className="w-5 h-5 mr-2" />
                             New Meeting
                         </Link>
                     </Button>
-                    <Button variant="outline" asChild className="w-full sm:w-auto lg:w-auto border-2 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-blue-50 dark:hover:from-indigo-900/20 dark:hover:to-blue-900/20 transition-all duration-300">
+                    <Button variant="outline" asChild className="w-full sm:w-auto xl:w-auto border-2 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-blue-50 dark:hover:from-indigo-900/20 dark:hover:to-blue-900/20 transition-all duration-300">
                         <Link href="/agents">
                             <BotIcon className="w-5 h-5 mr-2" />
                             Manage Agents
@@ -117,7 +117,7 @@ export const HomeView = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
                 <Link href="/meetings">
                     <Card className="relative overflow-hidden card-hover group cursor-pointer border-0 shadow-lg hover:shadow-xl">
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
