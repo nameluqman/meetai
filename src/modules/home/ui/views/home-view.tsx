@@ -94,7 +94,7 @@ export const HomeView = () => {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/10 dark:via-indigo-900/10 dark:to-purple-900/10 border border-blue-200/50 dark:border-blue-800/30">
                 <div className="space-y-2">
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold gradient-text">
-                        Welcome back, {user?.user?.name}! 👋
+                        Welcome back, {user?.user?.name}.
                     </h1>
                     <p className="text-muted-foreground text-lg sm:text-xl lg:text-2xl font-medium">
                         Here's what's happening with your meetings today
