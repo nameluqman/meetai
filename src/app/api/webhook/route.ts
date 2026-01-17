@@ -18,7 +18,7 @@ import { inngest } from "@/inngest/client";
 import { generateAvatarUri } from "@/lib/avatar";
 import { streamChat } from "@/lib/stream-chat";
 
-const openaiClient = new OpenAI({apiKey : process.env.OPENAI_API_KEY!});
+const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 function verifySignatureWithSDK(body: string, signature: string): boolean {
     return streamVideo.verifyWebhook(body, signature);
@@ -123,11 +123,11 @@ export async function POST(req: NextRequest) {
         }
 
         console.log(`Call session ended for meeting ${meetingId}, checking if it was a host-initiated end`);
-        
+
         // Check if there are still active participants before ending the meeting
         const call = streamVideo.video.call("default", meetingId);
         const callState = await call.get();
-        
+
         // Only mark as processing if the call was actually ended (no active participants)
         if (callState.call.ended_at) {
             await db
@@ -176,40 +176,40 @@ export async function POST(req: NextRequest) {
                 recordingUrl: event.call_recording.url,
             })
             .where(eq(meetings.id, meetingId))
-    }else if (eventType === "message.new"){
+    } else if (eventType === "message.new") {
         const event = payload as MessageNewEvent;
 
         const userId = event.user?.id;
         const channelId = event.channel_id;
         const text = event.message?.text;
 
-        if(!userId || !channelId || !text){
+        if (!userId || !channelId || !text) {
             return NextResponse.json(
-                {error: "Missing required fields"},
-                {status : 400}
+                { error: "Missing required fields" },
+                { status: 400 }
             );
         }
 
         const [existingMeeting] = await db
-        .select()
-        .from(meetings)
-        .where(and(eq(meetings.id, channelId),eq(meetings.status, "completed")))
-        
+            .select()
+            .from(meetings)
+            .where(and(eq(meetings.id, channelId), eq(meetings.status, "completed")))
+
         if (!existingMeeting) {
-            return NextResponse.json({ error: "Meeting not found" },{ status: 404 });
+            return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
         }
 
         if (existingMeeting.agentId) {
             const [existingAgent] = await db
-            .select()
-            .from(agents)
-            .where(eq(agents.id, existingMeeting.agentId!))
+                .select()
+                .from(agents)
+                .where(eq(agents.id, existingMeeting.agentId!))
 
             if (!existingAgent) {
-                return NextResponse.json({ error: "Agent not found" },{ status: 404 });
+                return NextResponse.json({ error: "Agent not found" }, { status: 404 });
             }
 
-            if (userId === existingAgent.id){
+            if (userId === existingAgent.id) {
                 return NextResponse.json({ status: "ok" });
             }
 
@@ -234,55 +234,55 @@ export async function POST(req: NextRequest) {
             `;
 
             const channel = streamChat.channel("messaging", channelId);
-                await channel.watch();
+            await channel.watch();
 
-                const previousMessages = channel.state.messages
-                    .slice(-5)
-                    .filter((msg) => msg.text && msg.text.trim() !== "")
-                    .map<ChatCompletionMessageParam>((message) => ({
-                        role: message.user?.id === existingAgent.id ? "assistant" : "user",
-                        content: message.text || "",
-                    }));
+            const previousMessages = channel.state.messages
+                .slice(-5)
+                .filter((msg) => msg.text && msg.text.trim() !== "")
+                .map<ChatCompletionMessageParam>((message) => ({
+                    role: message.user?.id === existingAgent.id ? "assistant" : "user",
+                    content: message.text || "",
+                }));
 
-                const GPTResponse = await openaiClient.chat.completions.create({
-                    messages: [
-                        { role: "system", content: instructions },
-                        ...previousMessages,
-                        { role: "user", content: text },
-                    ],
-                    model: "gpt-4o",
-                    });
+            const GPTResponse = await openaiClient.chat.completions.create({
+                messages: [
+                    { role: "system", content: instructions },
+                    ...previousMessages,
+                    { role: "user", content: text },
+                ],
+                model: "gpt-4o",
+            });
 
-                    const GPTResponseText =GPTResponse.choices[0].message.content;
+            const GPTResponseText = GPTResponse.choices[0].message.content;
 
-                    if(!GPTResponseText){
-                        return NextResponse.json(
-                            {error: "No Response from GPT" },
-                            { status: 400 }
-                        );
-                    }
+            if (!GPTResponseText) {
+                return NextResponse.json(
+                    { error: "No Response from GPT" },
+                    { status: 400 }
+                );
+            }
 
-                const avatarUrl = generateAvatarUri({
-                    seed : existingAgent.name,
-                    variant : "botttsNeutral",
-                });    
+            const avatarUrl = generateAvatarUri({
+                seed: existingAgent.name,
+                variant: "botttsNeutral",
+            });
 
-                streamChat.upsertUser({
+            streamChat.upsertUser({
+                id: existingAgent.id,
+                name: existingAgent.name,
+                image: avatarUrl,
+            });
+
+            channel.sendMessage({
+                text: GPTResponseText,
+                user: {
                     id: existingAgent.id,
-                    name:existingAgent.name,
+                    name: existingAgent.name,
                     image: avatarUrl,
-                });
-
-                channel.sendMessage({
-                    text:GPTResponseText,
-                    user:{
-                        id: existingAgent.id,
-                        name:existingAgent.name,
-                        image: avatarUrl,
-                    },
-                });
+                },
+            });
         } else {
-            return NextResponse.json({ error: "No agent assigned to meeting" },{ status: 404 });
+            return NextResponse.json({ error: "No agent assigned to meeting" }, { status: 404 });
         }
     }
     return NextResponse.json({ status: "ok" });

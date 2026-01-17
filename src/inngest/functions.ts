@@ -1,16 +1,16 @@
 import { eq, inArray } from "drizzle-orm";
-import JSONL from "jsonl-parse-stringify" ;
+import JSONL from "jsonl-parse-stringify";
 
 import { inngest } from "@/inngest/client";
-import {createAgent ,openai ,TextMessage} from "@inngest/agent-kit";
+import { createAgent, openai, TextMessage } from "@inngest/agent-kit";
 
-import {StreamTranscriptItem} from "@/modules/meetings/types";
+import { StreamTranscriptItem } from "@/modules/meetings/types";
 import { db } from "@/db";
 import { agents, meetings, user } from "@/db/schema";
 
 const summarizer = createAgent({
-  name : "summarizer",
-  system:`
+  name: "summarizer",
+  system: `
   You are an expert meeting summarizer specializing in multi-participant conversations. You analyze transcripts with multiple speakers and create comprehensive, readable summaries.
 
   Your task is to:
@@ -57,83 +57,83 @@ const summarizer = createAgent({
 
   Focus on capturing the richness of multi-person interactions, not just individual statements. Highlight collaboration, debate, and consensus-building processes.
   `.trim(),
-  model: openai({model:"gpt-4o",apiKey :process.env.OPENAI_API_KEY}),
+  model: openai({ model: "gpt-4o", apiKey: process.env.OPENAI_API_KEY }),
 })
 
 export const meetingsProcessing = inngest.createFunction(
-  {id : "meetings/processing"},
-  {event : "meetings/processing"},
+  { id: "meetings/processing" },
+  { event: "meetings/processing" },
 
-  async ({event ,step}) =>{
-    const response = await step.run("fetch-transcript" ,async ()=>{
-      return fetch(event.data.transcriptUrl).then((res)=>res.text());      
+  async ({ event, step }) => {
+    const response = await step.run("fetch-transcript", async () => {
+      return fetch(event.data.transcriptUrl).then((res) => res.text());
     });
 
-    const transcript = await step.run("parse-transcript" , async () =>{
+    const transcript = await step.run("parse-transcript", async () => {
       return JSONL.parse<StreamTranscriptItem>(response);
     });
 
-    const transcriptwithSpeakers = await step.run("add-speakers" , async () =>{
-          const speakerIds =[
-            ...new Set(transcript.map((item)=>item.speaker_id)),
-          ];
+    const transcriptwithSpeakers = await step.run("add-speakers", async () => {
+      const speakerIds = [
+        ...new Set(transcript.map((item) => item.speaker_id)),
+      ];
 
-          const userSpeakers = await db
-          .select()
-          .from(user)
-          .where(inArray(user.id , speakerIds))
-          .then((users)=>
-             users.map((users)=>({
+      const userSpeakers = await db
+        .select()
+        .from(user)
+        .where(inArray(user.id, speakerIds))
+        .then((users) =>
+          users.map((users) => ({
             ...user,
           }))
         );
-          const agentSpeakers = await db
-          .select()
-          .from(agents)
-          .where(inArray(agents.id , speakerIds))
-          .then((agents)=>
-             agents.map((agent)=>({
+      const agentSpeakers = await db
+        .select()
+        .from(agents)
+        .where(inArray(agents.id, speakerIds))
+        .then((agents) =>
+          agents.map((agent) => ({
             ...agent,
           }))
         );
 
-        const speakers = [...userSpeakers , ...agentSpeakers]
+      const speakers = [...userSpeakers, ...agentSpeakers]
 
-        return transcript.map((item)=>{
-          const speaker = speakers.find(
-            (speaker) => speaker.id === item.speaker_id
-          );
-          if(!speaker){
-            return{
-              ...item,
-              user:{
-                name : "Unknown",
-              },
-            };
-          }
-          return{
-              ...item,
-              user:{
-                name : speaker.name,
-              },
-            };
-          
-        });
+      return transcript.map((item) => {
+        const speaker = speakers.find(
+          (speaker) => speaker.id === item.speaker_id
+        );
+        if (!speaker) {
+          return {
+            ...item,
+            user: {
+              name: "Unknown",
+            },
+          };
+        }
+        return {
+          ...item,
+          user: {
+            name: speaker.name,
+          },
+        };
+
       });
+    });
 
-      const {output} = await summarizer.run(
-        `Analyze this multi-participant meeting transcript with ${transcriptwithSpeakers.length} speakers. Focus on interactions, discussion flow, and collaborative dynamics. ` +
-        JSON.stringify(transcriptwithSpeakers)
-      );
+    const { output } = await summarizer.run(
+      `Analyze this multi-participant meeting transcript with ${transcriptwithSpeakers.length} speakers. Focus on interactions, discussion flow, and collaborative dynamics. ` +
+      JSON.stringify(transcriptwithSpeakers)
+    );
 
-      await step.run("save-summary" , async () =>{
-        await db
-          .update(meetings)
-          .set({
-            summary: (output[0] as TextMessage).content as string,
-            status : "completed",
-          })
-          .where(eq(meetings.id , event.data.meetingId))
-      })
+    await step.run("save-summary", async () => {
+      await db
+        .update(meetings)
+        .set({
+          summary: (output[0] as TextMessage).content as string,
+          status: "completed",
+        })
+        .where(eq(meetings.id, event.data.meetingId))
+    })
   },
 );
